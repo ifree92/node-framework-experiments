@@ -26,12 +26,19 @@ function parseWrkResponse(data) {
 }
 
 async function main() {
-  await runTest('express-server');
-  await runTest('fastify-server');
-  await runTest('koa-server');
-  await runTest('nest-express-server');
-  await runTest('nest-fastify-server');
-  await runTest('nodejs-raw-server');
+  const resultExpressServer = await runTest('express-server');
+  const resultFastifyServer = await runTest('fastify-server');
+  const resultKoaServer = await runTest('koa-server');
+  const resultNestExpressServer = await runTest('nest-express-server');
+  const resultNestFastifyServer = await runTest('nest-fastify-server');
+  const resultNodeRawServer = await runTest('nodejs-raw-server');
+
+  console.log('express-server', resultExpressServer);
+  console.log('fastify-server', resultFastifyServer);
+  console.log('koa-server', resultKoaServer);
+  console.log('nest-express-server', resultNestExpressServer);
+  console.log('nest-fastify-server', resultNestFastifyServer);
+  console.log('nodejs-raw-server', resultNodeRawServer);
 }
 
 async function runTest(folder) {
@@ -57,6 +64,11 @@ async function runTest(folder) {
   console.time(`${folder} killed`);
   await execAsync(`docker kill ${folder}`);
   console.timeEnd(`${folder} killed`);
+
+  return {
+    index: resultIndex,
+    json: resultJson,
+  };
 }
 
 async function echoCheck(port, label) {
@@ -79,18 +91,18 @@ function sleepAsync(ms) {
 }
 
 async function runBenchmark(port, path) {
-  const { stdout } = await execAsync(`wrk -c 50 -t 50 -d 15 http://localhost:${port}${path}`);
+  const { stdout } = await execAsync(`wrk -c 50 -t 50 -d 10 http://localhost:${port}${path}`);
   let totalRps = 0;
   let totalReqs = 0;
-  for (let i = 0; i < 10; i++) {
-    const { stdout } = await execAsync(`wrk -c 50 -t 50 -d 15 http://localhost:${port}${path}`);
+  for (let i = 0; i < 5; i++) {
+    const { stdout } = await execAsync(`wrk -c 50 -t 50 -d 10 http://localhost:${port}${path}`);
     const data = parseWrkResponse(stdout);
     totalRps += data.requestsPerSecond;
     totalReqs += data.totalRequests;
   }
   return {
-    totalRps: totalRps / 10,
-    totalReqs: totalReqs / 10,
+    totalRps: totalRps / 5,
+    totalReqs: totalReqs / 5,
   };
 }
 
