@@ -91,18 +91,24 @@ function sleepAsync(ms) {
 }
 
 async function runBenchmark(port, path) {
-  const { stdout } = await execAsync(`wrk -c 50 -t 50 -d 10 http://localhost:${port}${path}`);
+  for (let i = 0; i < 3; i++) {
+    await execAsync(`wrk -c 50 -t 50 -d 10 http://localhost:${port}${path}`);
+    console.log(path, 'warming up', i + 1);
+  }
+
+  const repeats = 10;
+
   let totalRps = 0;
   let totalReqs = 0;
-  for (let i = 0; i < 5; i++) {
-    const { stdout } = await execAsync(`wrk -c 50 -t 50 -d 10 http://localhost:${port}${path}`);
+  for (let i = 0; i < repeats; i++) {
+    const { stdout } = await execAsync(`wrk -c 50 -t 50 -d 15 http://localhost:${port}${path}`);
     const data = parseWrkResponse(stdout);
     totalRps += data.requestsPerSecond;
     totalReqs += data.totalRequests;
   }
   return {
-    totalRps: totalRps / 5,
-    totalReqs: totalReqs / 5,
+    totalRps: totalRps / repeats,
+    totalReqs: totalReqs / repeats,
   };
 }
 
