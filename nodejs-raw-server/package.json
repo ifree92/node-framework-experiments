@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "PORT=3005 node app.js",
+    "start": "node app.js",
     "dev": "PORT=3005 nodemon app.js"
   },
   "keywords": [],
