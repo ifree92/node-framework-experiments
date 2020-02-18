@@ -25,6 +25,8 @@ function parseWrkResponse(data) {
   return { totalRequests, requestsPerSecond };
 }
 
+const PORT = parseInt(process.env.PORT);
+
 async function main() {
   const resultExpressServer = await runTest('express-server');
   const resultFastifyServer = await runTest('fastify-server');
@@ -47,16 +49,16 @@ async function runTest(folder) {
   console.timeEnd(`${folder} built`);
 
   console.time(`${folder} started`);
-  await execAsync(`docker run --rm -d -p 3000:3000 -e PORT=3000 --name ${folder} ${folder}:1`);
+  await execAsync(`docker run --rm -d -p ${PORT}:${PORT} -e PORT=${PORT} --name ${folder} ${folder}:1`);
   console.timeEnd(`${folder} started`);
 
   console.time(`${folder} echo OK`);
-  await echoCheck(3000, folder);
+  await echoCheck(PORT, folder);
   console.timeEnd(`${folder} echo OK`);
 
   console.log(`${folder} testing run...`);
-  const resultIndex = await runBenchmark(3000, '/');
-  const resultJson = await runBenchmark(3000, '/json');
+  const resultIndex = await runBenchmark(PORT, '/');
+  const resultJson = await runBenchmark(PORT, '/json');
 
   console.log(folder, '/', resultIndex);
   console.log(folder, '/json', resultJson);
