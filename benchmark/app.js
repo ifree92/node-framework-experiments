@@ -65,6 +65,10 @@ async function runTest(folder) {
   await execAsync(`docker kill ${folder}`);
   console.timeEnd(`${folder} killed`);
 
+  console.time(`${folder} removed`);
+  await execAsync(`docker rmi ${folder}:1`);
+  console.timeEnd(`${folder} removed`);
+
   return {
     index: resultIndex,
     json: resultJson,
