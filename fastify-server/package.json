@@ -17,6 +17,6 @@
     "arrowParens": "always"
   },
   "dependencies": {
-    "fastify": "^2.12.0"
+    "fastify": "^2.15.1"
   }
 }
